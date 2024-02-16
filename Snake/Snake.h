@@ -1,4 +1,7 @@
 #pragma once
+#ifndef _SNAKE_H_
+#define _SNAKE_H_
+
 #include <iostream>
 #include <Windows.h>
 #include "Keyboard.h"
@@ -9,14 +12,13 @@ class Snake : Keyboard
 	static const int WIDTH{ 40 }, HEIGHT{ 18 }, MAX_LEN_SNAKE{ (WIDTH - 3) * (HEIGHT - 2) };
 
 	char snake = 'O';
-	int snake_x[MAX_LEN_SNAKE] = { 0 };
-	int snake_y[MAX_LEN_SNAKE] = { 0 };
+	COORD pSnake[MAX_LEN_SNAKE] = {0, 0};
 	float speed{ 0 };
 
 	enum MOVE { UP, DOWN, LEFT, RIGTH };
 
 	char food = '*';
-	int food_x{ 0 }, food_y{ 0 };
+	COORD pFood{ 0, 0 };
 
 	int len{ 1 };
 
@@ -48,25 +50,25 @@ class Snake : Keyboard
 	void KeyDown()
 	{
 		// Нажатие W.
-		if (EventHandler(0x57))
+		if (EventHandler(0x57) || EventHandler(VK_UP))
 		{
 			if (snake_dir != DOWN)
 				snake_dir = UP;
 		}
 		// Нажатие D.
-		if (EventHandler(0x53))
+		if (EventHandler(0x53) || EventHandler(VK_DOWN))
 		{
 			if (snake_dir != UP)
 				snake_dir = DOWN;
 		}
 		// Нажатие A.
-		if (EventHandler(0x41))
+		if (EventHandler(0x41) || EventHandler(VK_LEFT))
 		{
 			if (snake_dir != RIGTH)
 				snake_dir = LEFT;
 		}
 		// Нажатие D.
-		if (EventHandler(0x44))
+		if (EventHandler(0x44) || EventHandler(VK_RIGHT))
 		{
 			if (snake_dir != LEFT)
 				snake_dir = RIGTH;
@@ -83,32 +85,30 @@ class Snake : Keyboard
 	{
 		snake_dir = UP;
 		speed = 1;
-		snake_x[0] = WIDTH / 2;
-		snake_y[0] = HEIGHT / 2;
-		food_x = 1 + rand() % (WIDTH - 3);
-		food_y = 1 + rand() % (HEIGHT - 2);
+		pSnake[0] = { (short)WIDTH / 2, (short)HEIGHT / 2 };
+		pFood = { (short)(1 + rand() % (WIDTH - 3)), (short)(1 + rand() % (HEIGHT - 2)) };
 	}
 
 	// Проверка съела ли змейка еду.
 	void IsEatFood()
 	{
-		if (snake_x[0] == food_x && snake_y[0] == food_y)
+		if (pSnake[0].X == pFood.X && pSnake[0].Y == pFood.Y)
 		{
 			len++;
-			food_x = 1 + rand() % (WIDTH - 3);
-			food_y = 1 + rand() % (HEIGHT - 2);
+			pFood = { (short)(1 + rand() % (WIDTH - 3)), (short)(1 + rand() % (HEIGHT - 2)) };
 		}
 	}
 
 	// Проверка на проигрыш.
 	bool IsLoss()
 	{
-		if (snake_x[0] == 0 || snake_y[0] == 0 || snake_x[0] == WIDTH - 2 || snake_y[0] == HEIGHT - 1)
+		// Проверка на столкновение со стеной.
+		if (pSnake[0].X == 0 || pSnake[0].Y == 0 || pSnake[0].X == WIDTH - 2 || pSnake[0].Y == HEIGHT - 1)
 			return true;
 
 		for (size_t i = 1; i < len; i++)
 		{
-			if (snake_x[0] == snake_x[i] && snake_y[0] == snake_y[i])
+			if (pSnake[0].X == pSnake[i].X && pSnake[0].Y == pSnake[i].Y)
 			{
 				i = len;
 				return true;
@@ -121,22 +121,19 @@ class Snake : Keyboard
 	void MoveSnake()
 	{
 		for (int i = len - 2; i >= 0; --i)
-		{
-			snake_x[i + 1] = snake_x[i];
-			snake_y[i + 1] = snake_y[i];
-		}
+			pSnake[i + 1] = pSnake[i];
 
 		if (snake_dir == UP)
-			--snake_y[0];
+			--pSnake[0].Y;
 
 		if (snake_dir == DOWN)
-			++snake_y[0];
+			++pSnake[0].Y;
 
 		if (snake_dir == RIGTH)
-			++snake_x[0];
+			++pSnake[0].X;
 
 		if (snake_dir == LEFT)
-			--snake_x[0];
+			--pSnake[0].X;
 	}
 
 	// Отрисовка экрана.
@@ -144,16 +141,14 @@ class Snake : Keyboard
 	{
 		gotoxy(0, 0);
 		std::cout << "Length = " << len << "\tSpeed = " << speed << "\n";
-		map[food_y * WIDTH + food_x] = food;
+		map[pFood.Y * WIDTH + pFood.X] = food;
 		for (size_t i = 0; i < len; i++)
-		{
-			map[snake_y[i] * WIDTH + snake_x[i]] = snake;
-		}
+			map[pSnake[i].Y * WIDTH + pSnake[i].X] = snake;
+
 		std::cout << map;
+
 		for (size_t i = 0; i < len; i++)
-		{
-			map[snake_y[i] * WIDTH + snake_x[i]] = ' ';
-		}
+			map[pSnake[i].Y * WIDTH + pSnake[i].X] = ' ';
 	}
 
 	//
@@ -200,3 +195,5 @@ public:
 		Final();
 	}
 };
+
+#endif // _SNAKE_H_

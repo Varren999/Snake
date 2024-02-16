@@ -1,8 +1,2 @@
 ﻿  main.cpp
-C:\Users\123\source\repos\Snake\Snake\MyFunction.h(12,16): warning C4838: Преобразование из "int" в "SHORT" требует сужающего преобразования.
-  (компиляция исходного файла "main.cpp")
-  
-C:\Users\123\source\repos\Snake\Snake\MyFunction.h(12,19): warning C4838: Преобразование из "int" в "SHORT" требует сужающего преобразования.
-  (компиляция исходного файла "main.cpp")
-  
   Snake.vcxproj -> C:\Users\123\source\repos\Snake\x64\Debug\Snake.exe
