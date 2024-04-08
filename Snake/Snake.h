@@ -9,7 +9,9 @@
 
 class Snake : Keyboard
 {
-	static const int WIDTH{ 40 }, HEIGHT{ 18 }, MAX_LEN_SNAKE{ (WIDTH - 3) * (HEIGHT - 2) };
+	static const int WIDTH{ 40 };
+	static const int HEIGHT{ 18 };
+	static const int MAX_LEN_SNAKE{ (WIDTH - 3) * (HEIGHT - 2) };
 
 	char snake = 'O';
 	COORD pSnake[MAX_LEN_SNAKE] = {0, 0};
@@ -152,7 +154,7 @@ class Snake : Keyboard
 	}
 
 	//
-	void Final()
+	void Final() const
 	{
 		if (is_run)
 		{

@@ -1,6 +1,5 @@
 #include "Snake.h"
 
-
 int main()
 {
 	setlocale(0, "");
